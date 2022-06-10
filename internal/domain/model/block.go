@@ -1,7 +1,11 @@
 package model
 
 import (
+  "fmt"
   "time"
+  "crypto/sha256"
+  "encoding/json"
+  "encoding/hex"
 )
 
 type Block struct {

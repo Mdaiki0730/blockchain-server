@@ -1,3 +1,11 @@
+package model
+
+import (
+  "fmt"
+  "strings"
+  "encoding/json"
+)
+
 type Transaction struct {
 	senderBlockchainAddress    string
 	recipientBlockchainAddress string
