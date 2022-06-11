@@ -47,8 +47,16 @@ func (bms *blockchainManagementServer) CreateTransactions(ctx context.Context, r
 	return res, nil
 }
 
-func (bms *blockchainManagementServer) GetTransactions(context.Context, *emptypb.Empty) (*blockchainpb.TransactionResponse, error) {
-	return nil, nil
+func (bms *blockchainManagementServer) GetTransactions(ctx context.Context, req *emptypb.Empty) (*blockchainpb.TransactionResponse, error) {
+	result, err := bms.application.GetTransactions(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	res := &blockchainpb.TransactionResponse{}
+	b, _ := json.Marshal(result)
+	json.Unmarshal(b, res)
+	return res, nil
 }
 
 func (bms *blockchainManagementServer) Mine(context.Context, *blockchainpb.BlockchainAddressRequest) (*blockchainpb.StatusResponse, error) {

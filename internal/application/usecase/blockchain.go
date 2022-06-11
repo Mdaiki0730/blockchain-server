@@ -59,7 +59,14 @@ func (ba *blockchainApp) CreateTransactions(ctx context.Context, cmd command.Tra
 }
 
 func (ba *blockchainApp) GetTransactions(ctx context.Context) (*result.Transactions, error) {
-	return nil, nil
+	bc := ba.GetBlockchain()
+  transactions := bc.TransactionPool()
+
+	res := &result.Transactions{}
+	b, _ := json.Marshal(transactions)
+	json.Unmarshal(b, &res.Transactions)
+	res.Length = len(transactions)
+	return res, nil
 }
 
 func (ba *blockchainApp) Mine(ctx context.Context, blockchainAddress string) error {
