@@ -11,7 +11,7 @@ option go_package = "./;blockchainpb";
 service BlockchainManagement {
   rpc GetChain(google.protobuf.Empty) returns (ChainResponse) {
     option (google.api.http) = {
-      get : "/v1/chian"
+      get : "/v1/chain"
     };
   };
   rpc CreateTransactions(CreateTransactionRequest) returns (StatusResponse) {

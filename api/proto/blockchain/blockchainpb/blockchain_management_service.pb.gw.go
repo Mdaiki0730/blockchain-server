@@ -521,7 +521,7 @@ func RegisterBlockchainManagementHandlerClient(ctx context.Context, mux *runtime
 }
 
 var (
-	pattern_BlockchainManagement_GetChain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "chian"}, "", runtime.AssumeColonVerbOpt(true)))
+	pattern_BlockchainManagement_GetChain_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "chain"}, "", runtime.AssumeColonVerbOpt(true)))
 
 	pattern_BlockchainManagement_CreateTransactions_0 = runtime.MustPattern(runtime.NewPattern(1, []int{2, 0, 2, 1}, []string{"v1", "transactions"}, "", runtime.AssumeColonVerbOpt(true)))
 
