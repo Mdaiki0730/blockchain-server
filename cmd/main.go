@@ -85,6 +85,10 @@ func RunGateway() error {
 	if err != nil {
 		return err
 	}
+	err = blockchainpb.RegisterBlockchainManagementHandlerFromEndpoint(ctx, mux, endpoint, opts)
+	if err != nil {
+		return err
+	}
 	return http.ListenAndServe(fmt.Sprintf(":%s", config.Global.RestPort), mux)
 }
 
