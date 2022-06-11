@@ -5,40 +5,46 @@ import (
 	"encoding/json"
 
 	"garicoin/api/proto/blockchain/blockchainpb"
-	"garicoin/internal/domain/model"
-	"garicoin/pkg/config"
+	"garicoin/internal/application/command"
+	"garicoin/internal/application/usecase"
+	"garicoin/pkg/constant"
 
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type blockchainManagementServer struct{}
-
-var cache map[string]*model.Blockchain = make(map[string]*model.Blockchain)
-
-func NewBlockchainManagementServer() blockchainpb.BlockchainManagementServer {
-	return &blockchainManagementServer{}
+type blockchainManagementServer struct{
+	application usecase.BlockchainAppIF
 }
 
-func (bms *blockchainManagementServer) GetBlockchain() *model.Blockchain {
-  bc, ok := cache["blockchain"]
-  if !ok {
-    bc = model.NewBlockchain(config.Global.MinersBlockchainAddress)
-    cache["blockchain"] = bc
-  }
-  return bc
+func NewBlockchainManagementServer(app usecase.BlockchainAppIF) blockchainpb.BlockchainManagementServer {
+	return &blockchainManagementServer{app}
 }
 
-func (bms *blockchainManagementServer) GetChain(context.Context, *emptypb.Empty) (*blockchainpb.ChainResponse, error) {
-	bc := bms.GetBlockchain()
+func (bms *blockchainManagementServer) GetChain(ctx context.Context, req *emptypb.Empty) (*blockchainpb.ChainResponse, error) {
+	result, err := bms.application.GetChain(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	res := &blockchainpb.ChainResponse{}
-	b, _ := json.Marshal(bc)
+	b, _ := json.Marshal(result)
 	json.Unmarshal(b, res)
 	return res, nil
 }
 
-func (bms *blockchainManagementServer) CreateTransactions(context.Context, *blockchainpb.CreateTransactionRequest) (*blockchainpb.StatusResponse, error) {
-	return nil, nil
+func (bms *blockchainManagementServer) CreateTransactions(ctx context.Context, req *blockchainpb.CreateTransactionRequest) (*blockchainpb.StatusResponse, error) {
+	cmd := command.TransactionCreate{}
+	b, _ := json.Marshal(req)
+	json.Unmarshal(b, &cmd)
+
+	err := bms.application.CreateTransactions(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+
+	status := constant.SUCCESS_MESSAGE
+	res := &blockchainpb.StatusResponse{Status: &status}
+	return res, nil
 }
 
 func (bms *blockchainManagementServer) GetTransactions(context.Context, *emptypb.Empty) (*blockchainpb.TransactionResponse, error) {

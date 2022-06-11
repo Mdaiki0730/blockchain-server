@@ -11,6 +11,7 @@ import (
 
 	"garicoin/api/proto/health/healthpb"
 	"garicoin/api/proto/blockchain/blockchainpb"
+	"garicoin/internal/application/usecase"
 	"garicoin/internal/presentation/middleware"
 	"garicoin/internal/presentation/server"
 	"garicoin/pkg/config"
@@ -58,7 +59,7 @@ func RunGrpc() error {
 	grpcServer := grpc.NewServer(grpc.UnaryInterceptor(authInterceptor.AuthUnary()))
 
 	healthServer := server.NewHealthServer()
-	blockchainServer := server.NewBlockchainManagementServer()
+	blockchainServer := server.NewBlockchainManagementServer(usecase.NewBlockchainApp())
 	healthpb.RegisterHealthServer(grpcServer, healthServer)
 	blockchainpb.RegisterBlockchainManagementServer(grpcServer, blockchainServer)
 
