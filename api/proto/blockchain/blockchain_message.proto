@@ -1,0 +1,47 @@
+syntax = "proto2";
+
+package proto;
+
+option go_package = "./;blockchainpb";
+
+message ChainResponse {
+  repeated BlockMessase chain = 1;
+}
+
+message BlockMessase {
+  required int64              timestamp     = 1;
+  required int64              nonce         = 2;
+  required string             previous_hash = 3;
+  repeated TransactionMessage transactions  = 4;
+}
+
+message TransactionMessage {
+  required string sender_blockchain_address    = 1;
+  required string recipient_blockchain_address = 2;
+  required double value                        = 3;
+}
+
+message CreateTransactionRequest {
+  required string sender_blockchain_address    = 1;
+  required string recipient_blockchain_address = 2;
+  required string sender_public_key            = 3;
+  required double value                        = 4;
+  required string signature                    = 5;
+}
+
+message TransactionResponse {
+  repeated TransactionMessage transactions = 1;
+  required int64              length       = 2;
+}
+
+message BlockchainAddressRequest {
+  required string blockchain_address = 1;
+}
+
+message StatusResponse {
+  required string status = 1;
+}
+
+message AmountResponse {
+  required double amount = 1;
+}

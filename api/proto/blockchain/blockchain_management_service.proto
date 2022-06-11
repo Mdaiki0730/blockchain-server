@@ -1,0 +1,43 @@
+syntax = "proto2";
+
+package proto;
+
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+import "blockchain_message.proto";
+
+option go_package = "./;blockchainpb";
+
+service BlockchainManagement {
+  rpc GetChain(google.protobuf.Empty) returns (ChainResponse) {
+    option (google.api.http) = {
+      get : "/v1/chian"
+    };
+  };
+  rpc CreateTransactions(CreateTransactionRequest) returns (StatusResponse) {
+    option (google.api.http) = {
+      post : "/v1/transactions"
+      body : "*"
+    };
+  };
+  rpc GetTransactions(google.protobuf.Empty) returns (TransactionResponse) {
+    option (google.api.http) = {
+      get : "/v1/transactions"
+    };
+  };
+  rpc Mine(BlockchainAddressRequest) returns (StatusResponse) {
+    option (google.api.http) = {
+      get : "/v1/mine"
+    };
+  };
+  rpc StartMine(BlockchainAddressRequest) returns (StatusResponse) {
+    option (google.api.http) = {
+      get : "/v1/mine/start"
+    };
+  };
+  rpc Amount(BlockchainAddressRequest) returns (AmountResponse) {
+    option (google.api.http) = {
+      get : "/v1/amount"
+    };
+  };
+}
