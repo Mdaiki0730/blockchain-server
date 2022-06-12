@@ -16,7 +16,7 @@ type BlockchainAppIF interface {
 	GetChain(ctx context.Context) (*result.Blockchain, error)
 	CreateTransactions(ctx context.Context, cmd command.TransactionCreate) error
 	GetTransactions(ctx context.Context) (*result.Transactions, error)
-	Amount(ctx context.Context, blockchainAddress string) (float32, error)
+	Amount(ctx context.Context, blockchainAddress string) (float64, error)
 }
 
 type blockchainApp struct{}
@@ -70,6 +70,7 @@ func (ba *blockchainApp) GetTransactions(ctx context.Context) (*result.Transacti
 	return res, nil
 }
 
-func (ba *blockchainApp) Amount(ctx context.Context, blockchainAddress string) (float32, error) {
-	return 0, nil
+func (ba *blockchainApp) Amount(ctx context.Context, blockchainAddress string) (float64, error) {
+	amount := ba.GetBlockchain().CalculateTotalAmount(blockchainAddress)
+	return amount, nil
 }

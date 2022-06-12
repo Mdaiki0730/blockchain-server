@@ -59,6 +59,11 @@ func (bms *blockchainManagementServer) GetTransactions(ctx context.Context, req 
 	return res, nil
 }
 
-func (bms *blockchainManagementServer) Amount(context.Context, *blockchainpb.BlockchainAddressRequest) (*blockchainpb.AmountResponse, error) {
-	return nil, nil
+func (bms *blockchainManagementServer) Amount(ctx context.Context, req *blockchainpb.BlockchainAddressRequest) (*blockchainpb.AmountResponse, error) {
+	amount, err := bms.application.Amount(ctx, req.GetBlockchainAddress())
+	if err != nil {
+		return nil, err
+	}
+
+	return &blockchainpb.AmountResponse{Amount: &amount}, nil
 }
