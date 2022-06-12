@@ -25,16 +25,6 @@ service BlockchainManagement {
       get : "/v1/transactions"
     };
   };
-  rpc Mine(BlockchainAddressRequest) returns (StatusResponse) {
-    option (google.api.http) = {
-      get : "/v1/mine"
-    };
-  };
-  rpc StartMine(BlockchainAddressRequest) returns (StatusResponse) {
-    option (google.api.http) = {
-      get : "/v1/mine/start"
-    };
-  };
   rpc Amount(BlockchainAddressRequest) returns (AmountResponse) {
     option (google.api.http) = {
       get : "/v1/amount"

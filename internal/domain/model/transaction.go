@@ -1,9 +1,9 @@
 package model
 
 import (
-  "fmt"
-  "strings"
-  "encoding/json"
+	"encoding/json"
+	"fmt"
+	"strings"
 )
 
 type Transaction struct {
@@ -36,17 +36,17 @@ func (t *Transaction) MarshalJSON() ([]byte, error) {
 }
 
 func (t *Transaction) UnmarshalJSON(data []byte) error {
-  v := &struct{
-    SenderBlockchainAddress    *string  `json:"sender_blockchain_address"`
+	v := &struct {
+		SenderBlockchainAddress    *string  `json:"sender_blockchain_address"`
 		RecipientBlockchainAddress *string  `json:"recipient_blockchain_address"`
 		Value                      *float64 `json:"value"`
-  } {
-    SenderBlockchainAddress:    &t.senderBlockchainAddress,
+	}{
+		SenderBlockchainAddress:    &t.senderBlockchainAddress,
 		RecipientBlockchainAddress: &t.recipientBlockchainAddress,
 		Value:                      &t.value,
-  }
-  if err := json.Unmarshal(data, &v); err != nil {
-    return err
-  }
-  return nil
+	}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	return nil
 }

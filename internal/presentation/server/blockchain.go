@@ -12,7 +12,7 @@ import (
 	"google.golang.org/protobuf/types/known/emptypb"
 )
 
-type blockchainManagementServer struct{
+type blockchainManagementServer struct {
 	application usecase.BlockchainAppIF
 }
 
@@ -57,14 +57,6 @@ func (bms *blockchainManagementServer) GetTransactions(ctx context.Context, req 
 	b, _ := json.Marshal(result)
 	json.Unmarshal(b, res)
 	return res, nil
-}
-
-func (bms *blockchainManagementServer) Mine(context.Context, *blockchainpb.BlockchainAddressRequest) (*blockchainpb.StatusResponse, error) {
-	return nil, nil
-}
-
-func (bms *blockchainManagementServer) StartMine(context.Context, *blockchainpb.BlockchainAddressRequest) (*blockchainpb.StatusResponse, error) {
-	return nil, nil
 }
 
 func (bms *blockchainManagementServer) Amount(context.Context, *blockchainpb.BlockchainAddressRequest) (*blockchainpb.AmountResponse, error) {

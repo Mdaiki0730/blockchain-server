@@ -1,28 +1,27 @@
 package model
 
 import (
-  "crypto/ecdsa"
+	"crypto/ecdsa"
 	"crypto/sha256"
 	"encoding/json"
 	"fmt"
 	"log"
 	"strings"
+	"sync"
 	"time"
-  "sync"
-  "net/http"
 
-  "garicoin/pkg/constant"
+	"garicoin/pkg/constant"
 )
 
 type Blockchain struct {
 	transactionPool   []*Transaction
 	chain             []*Block
 	blockchainAddress string
-  port              uint16
-  mux               sync.Mutex
+	port              uint16
+	mux               sync.Mutex
 
-  neighbors         []string
-  muxNeighbors      sync.Mutex
+	neighbors    []string
+	muxNeighbors sync.Mutex
 }
 
 func NewBlockchain(blockchainAddress string) *Blockchain {
@@ -34,42 +33,42 @@ func NewBlockchain(blockchainAddress string) *Blockchain {
 }
 
 func (bc *Blockchain) Chain() []*Block {
-  return bc.chain
+	return bc.chain
 }
 
 func (bc *Blockchain) TransactionPool() []*Transaction {
-  return bc.transactionPool
+	return bc.transactionPool
 }
 
 func (bc *Blockchain) ClearTransactionPool() {
-  bc.transactionPool = bc.transactionPool[:0]
+	bc.transactionPool = bc.transactionPool[:0]
 }
 
 func (bc *Blockchain) MarshalJSON() ([]byte, error) {
-  return json.Marshal(struct {
-		Blocks  []*Block `json:"chain"`
+	return json.Marshal(struct {
+		Blocks []*Block `json:"chain"`
 	}{
 		Blocks: bc.chain,
 	})
 }
 
 func (bc *Blockchain) UnmarshalJSON(data []byte) error {
-  v := &struct {
-    Blocks *[]*Block `json:"chain"`
-  } {
-    Blocks: &bc.chain,
-  }
-  if err := json.Unmarshal(data, &v); err != nil {
-    return err
-  }
-  return nil
+	v := &struct {
+		Blocks *[]*Block `json:"chain"`
+	}{
+		Blocks: &bc.chain,
+	}
+	if err := json.Unmarshal(data, &v); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (bc *Blockchain) CreateBlock(nonce int, previousHash [32]byte) *Block {
 	b := NewBlock(nonce, previousHash, bc.transactionPool)
 	bc.chain = append(bc.chain, b)
 	bc.transactionPool = []*Transaction{}
-  // sync other node
+	// sync other node
 	return b
 }
 
@@ -86,11 +85,11 @@ func (bc *Blockchain) Print() {
 }
 
 func (bc *Blockchain) CreateTransaction(sender string, recipient string, value float64, senderPublicKey *ecdsa.PublicKey, s *Signature) bool {
-  isTransacted := bc.AddTransaction(sender, recipient, value, senderPublicKey, s)
+	isTransacted := bc.AddTransaction(sender, recipient, value, senderPublicKey, s)
 
-  // sync other node
+	// sync other node
 
-  return isTransacted
+	return isTransacted
 }
 
 func (bc *Blockchain) AddTransaction(sender string, recipient string, value float64, senderPublicKey *ecdsa.PublicKey, s *Signature) bool {
@@ -101,8 +100,8 @@ func (bc *Blockchain) AddTransaction(sender string, recipient string, value floa
 	}
 	if bc.VerifyTransactionSignature(senderPublicKey, s, t) {
 		if bc.CalculateTotalAmount(sender) < value {
-		  log.Println("ERROR: Not enough balance in a wallet")
-		  return false
+			log.Println("ERROR: Not enough balance in a wallet")
+			return false
 		}
 		bc.transactionPool = append(bc.transactionPool, t)
 		return true
@@ -115,7 +114,7 @@ func (bc *Blockchain) AddTransaction(sender string, recipient string, value floa
 func (bc *Blockchain) VerifyTransactionSignature(senderPublicKey *ecdsa.PublicKey, s *Signature, t *Transaction) bool {
 	m, _ := json.Marshal(t)
 	h := sha256.Sum256([]byte(m))
-  fmt.Println(t)
+	fmt.Println(t)
 	return ecdsa.Verify(senderPublicKey, h[:], s.R, s.S)
 }
 
@@ -145,12 +144,12 @@ func (bc *Blockchain) ProofOfWork() int {
 }
 
 func (bc *Blockchain) Mining() bool {
-  bc.mux.Lock()
-  defer bc.mux.Unlock()
+	bc.mux.Lock()
+	defer bc.mux.Unlock()
 
-  // if len(bc.transactionPool) == 0 {
-  //   return false
-  // }
+	// if len(bc.transactionPool) == 0 {
+	//   return false
+	// }
 
 	bc.AddTransaction(constant.MINING_SENDER, bc.blockchainAddress, constant.MINING_REWARD, nil, nil)
 	nonce := bc.ProofOfWork()
@@ -158,19 +157,13 @@ func (bc *Blockchain) Mining() bool {
 	bc.CreateBlock(nonce, previousHash)
 	log.Println("action=mining, status=success")
 
-  for _, n := range bc.neighbors {
-    endpoint := fmt.Sprintf("http://%s/consensus", n)
-    client := &http.Client{}
-    req, _ := http.NewRequest("PUT", endpoint, nil)
-    resp, _ := client.Do(req)
-    log.Printf("%v", resp)
-  }
+	// sync other node
 	return true
 }
 
 func (bc *Blockchain) StartMining() {
-  bc.Mining()
-  _ = time.AfterFunc(time.Second * constant.MINING_TIMER_SEC, bc.StartMining)
+	bc.Mining()
+	_ = time.AfterFunc(time.Second*constant.MINING_TIMER_SEC, bc.StartMining)
 }
 
 func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float64 {
@@ -190,19 +183,19 @@ func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float64 {
 }
 
 func (bc *Blockchain) ValidChain(chain []*Block) bool {
-  preBlock := chain[0]
-  currentIndex := 1
-  for currentIndex < len(chain) {
-    b := chain[currentIndex]
-    if b.previousHash != preBlock.Hash() {
-      return false
-    }
-    if !bc.ValidProof(b.Nonce(), b.PreviousHash(), b.Transactions(), constant.MINING_DIFFICULTY) {
-      return false
-    }
+	preBlock := chain[0]
+	currentIndex := 1
+	for currentIndex < len(chain) {
+		b := chain[currentIndex]
+		if b.previousHash != preBlock.Hash() {
+			return false
+		}
+		if !bc.ValidProof(b.Nonce(), b.PreviousHash(), b.Transactions(), constant.MINING_DIFFICULTY) {
+			return false
+		}
 
-    preBlock = b
-    currentIndex += 1
-  }
-  return true
+		preBlock = b
+		currentIndex += 1
+	}
+	return true
 }

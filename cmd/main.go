@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"garicoin/api/proto/health/healthpb"
 	"garicoin/api/proto/blockchain/blockchainpb"
+	"garicoin/api/proto/health/healthpb"
 	"garicoin/internal/application/usecase"
 	"garicoin/internal/presentation/middleware"
 	"garicoin/internal/presentation/server"

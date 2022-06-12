@@ -1,5 +1,5 @@
 package constant
 
 const (
-  SUCCESS_MESSAGE = "success"
+	SUCCESS_MESSAGE = "success"
 )

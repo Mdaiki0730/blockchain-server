@@ -16,26 +16,27 @@ type BlockchainAppIF interface {
 	GetChain(ctx context.Context) (*result.Blockchain, error)
 	CreateTransactions(ctx context.Context, cmd command.TransactionCreate) error
 	GetTransactions(ctx context.Context) (*result.Transactions, error)
-	Mine(ctx context.Context, blockchainAddress string) error
-	StartMine(ctx context.Context, blockchainAddress string) error
 	Amount(ctx context.Context, blockchainAddress string) (float32, error)
 }
 
-type blockchainApp struct {}
+type blockchainApp struct{}
 
 var cache map[string]*model.Blockchain = make(map[string]*model.Blockchain)
 
 func NewBlockchainApp() BlockchainAppIF {
-	return &blockchainApp{}
+	ba := &blockchainApp{}
+	bc := ba.GetBlockchain()
+	bc.StartMining()
+	return ba
 }
 
 func (ba *blockchainApp) GetBlockchain() *model.Blockchain {
-  bc, ok := cache["blockchain"]
-  if !ok {
-    bc = model.NewBlockchain(config.Global.MinersBlockchainAddress)
-    cache["blockchain"] = bc
-  }
-  return bc
+	bc, ok := cache["blockchain"]
+	if !ok {
+		bc = model.NewBlockchain(config.Global.MinersBlockchainAddress)
+		cache["blockchain"] = bc
+	}
+	return bc
 }
 
 func (ba *blockchainApp) GetChain(ctx context.Context) (*result.Blockchain, error) {
@@ -50,7 +51,7 @@ func (ba *blockchainApp) GetChain(ctx context.Context) (*result.Blockchain, erro
 func (ba *blockchainApp) CreateTransactions(ctx context.Context, cmd command.TransactionCreate) error {
 	bc := ba.GetBlockchain()
 	publicKey := converter.PublicKeyFromString(*cmd.SenderPublicKey)
-  signature := model.NewSignature(*cmd.Signature)
+	signature := model.NewSignature(*cmd.Signature)
 	isCreated := bc.CreateTransaction(*cmd.SenderBlockchainAddress, *cmd.RecipientBlockchainAddress, *cmd.Value, publicKey, signature)
 	if !isCreated {
 		return errors.New("ERROR: can't create transactions")
@@ -60,21 +61,13 @@ func (ba *blockchainApp) CreateTransactions(ctx context.Context, cmd command.Tra
 
 func (ba *blockchainApp) GetTransactions(ctx context.Context) (*result.Transactions, error) {
 	bc := ba.GetBlockchain()
-  transactions := bc.TransactionPool()
+	transactions := bc.TransactionPool()
 
 	res := &result.Transactions{}
 	b, _ := json.Marshal(transactions)
 	json.Unmarshal(b, &res.Transactions)
 	res.Length = len(transactions)
 	return res, nil
-}
-
-func (ba *blockchainApp) Mine(ctx context.Context, blockchainAddress string) error {
-	return nil
-}
-
-func (ba *blockchainApp) StartMine(ctx context.Context, blockchainAddress string) error {
-	return nil
 }
 
 func (ba *blockchainApp) Amount(ctx context.Context, blockchainAddress string) (float32, error) {

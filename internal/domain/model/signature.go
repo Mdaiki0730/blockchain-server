@@ -1,10 +1,10 @@
 package model
 
 import (
-  "fmt"
-  "math/big"
+	"fmt"
+	"math/big"
 
-  "garicoin/pkg/converter"
+	"garicoin/pkg/converter"
 )
 
 type Signature struct {
@@ -13,8 +13,8 @@ type Signature struct {
 }
 
 func NewSignature(signature string) *Signature {
-  x, y := converter.String2BigIntTuple(signature)
-  return &Signature{&x, &y}
+	x, y := converter.String2BigIntTuple(signature)
+	return &Signature{&x, &y}
 }
 
 func (s *Signature) String() string {

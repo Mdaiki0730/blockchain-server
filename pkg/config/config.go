@@ -5,11 +5,11 @@ import (
 )
 
 type Env struct {
-	RestPort      string `required:"true" envconfig:"REST_PORT"`
-	GrpcPort      string `required:"true" envconfig:"GRPC_PORT"`
-	JWTSignature  string `required:"true" envconfig:"JWT_SIGNATURE"`
-	TokenDuration int    `required:"true" envconfig:"TOKEN_DURATION"`
-	MinersBlockchainAddress string    `required:"true" envconfig:"MINERS_BLOCKCHAIN_ADDRESS"`
+	RestPort                string `required:"true" envconfig:"REST_PORT"`
+	GrpcPort                string `required:"true" envconfig:"GRPC_PORT"`
+	JWTSignature            string `required:"true" envconfig:"JWT_SIGNATURE"`
+	TokenDuration           int    `required:"true" envconfig:"TOKEN_DURATION"`
+	MinersBlockchainAddress string `required:"true" envconfig:"MINERS_BLOCKCHAIN_ADDRESS"`
 }
 
 var Global Env = Env{}

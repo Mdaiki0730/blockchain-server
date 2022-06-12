@@ -26,8 +26,6 @@ type BlockchainManagementClient interface {
 	GetChain(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*ChainResponse, error)
 	CreateTransactions(ctx context.Context, in *CreateTransactionRequest, opts ...grpc.CallOption) (*StatusResponse, error)
 	GetTransactions(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*TransactionResponse, error)
-	Mine(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*StatusResponse, error)
-	StartMine(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*StatusResponse, error)
 	Amount(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*AmountResponse, error)
 }
 
@@ -66,24 +64,6 @@ func (c *blockchainManagementClient) GetTransactions(ctx context.Context, in *em
 	return out, nil
 }
 
-func (c *blockchainManagementClient) Mine(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*StatusResponse, error) {
-	out := new(StatusResponse)
-	err := c.cc.Invoke(ctx, "/proto.BlockchainManagement/Mine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *blockchainManagementClient) StartMine(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*StatusResponse, error) {
-	out := new(StatusResponse)
-	err := c.cc.Invoke(ctx, "/proto.BlockchainManagement/StartMine", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *blockchainManagementClient) Amount(ctx context.Context, in *BlockchainAddressRequest, opts ...grpc.CallOption) (*AmountResponse, error) {
 	out := new(AmountResponse)
 	err := c.cc.Invoke(ctx, "/proto.BlockchainManagement/Amount", in, out, opts...)
@@ -100,8 +80,6 @@ type BlockchainManagementServer interface {
 	GetChain(context.Context, *emptypb.Empty) (*ChainResponse, error)
 	CreateTransactions(context.Context, *CreateTransactionRequest) (*StatusResponse, error)
 	GetTransactions(context.Context, *emptypb.Empty) (*TransactionResponse, error)
-	Mine(context.Context, *BlockchainAddressRequest) (*StatusResponse, error)
-	StartMine(context.Context, *BlockchainAddressRequest) (*StatusResponse, error)
 	Amount(context.Context, *BlockchainAddressRequest) (*AmountResponse, error)
 }
 
@@ -117,12 +95,6 @@ func (UnimplementedBlockchainManagementServer) CreateTransactions(context.Contex
 }
 func (UnimplementedBlockchainManagementServer) GetTransactions(context.Context, *emptypb.Empty) (*TransactionResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetTransactions not implemented")
-}
-func (UnimplementedBlockchainManagementServer) Mine(context.Context, *BlockchainAddressRequest) (*StatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Mine not implemented")
-}
-func (UnimplementedBlockchainManagementServer) StartMine(context.Context, *BlockchainAddressRequest) (*StatusResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method StartMine not implemented")
 }
 func (UnimplementedBlockchainManagementServer) Amount(context.Context, *BlockchainAddressRequest) (*AmountResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Amount not implemented")
@@ -193,42 +165,6 @@ func _BlockchainManagement_GetTransactions_Handler(srv interface{}, ctx context.
 	return interceptor(ctx, in, info, handler)
 }
 
-func _BlockchainManagement_Mine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockchainAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BlockchainManagementServer).Mine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.BlockchainManagement/Mine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockchainManagementServer).Mine(ctx, req.(*BlockchainAddressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-func _BlockchainManagement_StartMine_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(BlockchainAddressRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(BlockchainManagementServer).StartMine(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/proto.BlockchainManagement/StartMine",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(BlockchainManagementServer).StartMine(ctx, req.(*BlockchainAddressRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
 func _BlockchainManagement_Amount_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(BlockchainAddressRequest)
 	if err := dec(in); err != nil {
@@ -265,14 +201,6 @@ var BlockchainManagement_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetTransactions",
 			Handler:    _BlockchainManagement_GetTransactions_Handler,
-		},
-		{
-			MethodName: "Mine",
-			Handler:    _BlockchainManagement_Mine_Handler,
-		},
-		{
-			MethodName: "StartMine",
-			Handler:    _BlockchainManagement_StartMine_Handler,
 		},
 		{
 			MethodName: "Amount",
