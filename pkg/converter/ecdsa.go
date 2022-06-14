@@ -7,25 +7,37 @@ import (
 	"math/big"
 )
 
-func String2BigIntTuple(s string) (big.Int, big.Int) {
-	bx, _ := hex.DecodeString(s[:64])
-	by, _ := hex.DecodeString(s[64:])
+func String2BigIntTuple(s string) (big.Int, big.Int, error) {
+	bx, err := hex.DecodeString(s[:64])
+	if err != nil {
+		return big.Int{}, big.Int{}, err
+	}
+	by, err := hex.DecodeString(s[64:])
+	if err != nil {
+		return big.Int{}, big.Int{}, err
+	}
 	var bix big.Int
 	var biy big.Int
 
 	_ = bix.SetBytes(bx)
 	_ = biy.SetBytes(by)
-	return bix, biy
+	return bix, biy, nil
 }
 
-func PublicKeyFromString(s string) *ecdsa.PublicKey {
-	x, y := String2BigIntTuple(s)
-	return &ecdsa.PublicKey{elliptic.P256(), &x, &y}
+func PublicKeyFromString(s string) (*ecdsa.PublicKey, error) {
+	x, y, err := String2BigIntTuple(s)
+	if err != nil {
+		return nil, err
+	}
+	return &ecdsa.PublicKey{elliptic.P256(), &x, &y}, nil
 }
 
-func PrivateKeyFromString(s string, publicKey *ecdsa.PublicKey) *ecdsa.PrivateKey {
-	b, _ := hex.DecodeString(s[:])
+func PrivateKeyFromString(s string, publicKey *ecdsa.PublicKey) (*ecdsa.PrivateKey, error) {
+	b, err := hex.DecodeString(s[:])
+	if err != nil {
+		return nil, err
+	}
 	var bi big.Int
 	_ = bi.SetBytes(b)
-	return &ecdsa.PrivateKey{*publicKey, &bi}
+	return &ecdsa.PrivateKey{*publicKey, &bi}, nil
 }

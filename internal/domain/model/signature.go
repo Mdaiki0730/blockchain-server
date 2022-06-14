@@ -12,9 +12,12 @@ type Signature struct {
 	S *big.Int
 }
 
-func NewSignature(signature string) *Signature {
-	x, y := converter.String2BigIntTuple(signature)
-	return &Signature{&x, &y}
+func NewSignature(signature string) (*Signature, error) {
+	x, y, err := converter.String2BigIntTuple(signature)
+	if err != nil {
+		return nil, err
+	}
+	return &Signature{&x, &y}, nil
 }
 
 func (s *Signature) String() string {

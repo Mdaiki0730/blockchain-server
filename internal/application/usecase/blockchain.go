@@ -50,8 +50,14 @@ func (ba *blockchainApp) GetChain(ctx context.Context) (*result.Blockchain, erro
 
 func (ba *blockchainApp) CreateTransactions(ctx context.Context, cmd command.TransactionCreate) error {
 	bc := ba.GetBlockchain()
-	publicKey := converter.PublicKeyFromString(*cmd.SenderPublicKey)
-	signature := model.NewSignature(*cmd.Signature)
+	publicKey, err := converter.PublicKeyFromString(*cmd.SenderPublicKey)
+	if err != nil {
+		return err
+	}
+	signature, err := model.NewSignature(*cmd.Signature)
+	if err != nil {
+		return err
+	}
 	isCreated := bc.CreateTransaction(*cmd.SenderBlockchainAddress, *cmd.RecipientBlockchainAddress, *cmd.Value, publicKey, signature)
 	if !isCreated {
 		return errors.New("ERROR: can't create transactions")
