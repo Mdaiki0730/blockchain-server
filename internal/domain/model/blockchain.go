@@ -179,6 +179,15 @@ func (bc *Blockchain) CalculateTotalAmount(blockchainAddress string) float64 {
 			}
 		}
 	}
+	for _, p := range bc.transactionPool {
+		value := p.value
+		if blockchainAddress == p.recipientBlockchainAddress {
+			totalAmount += value
+		}
+		if blockchainAddress == p.senderBlockchainAddress {
+			totalAmount -= value
+		}
+	}
 	return totalAmount
 }
 
